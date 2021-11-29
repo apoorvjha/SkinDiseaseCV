@@ -1,4 +1,4 @@
-from cv2 import drawContours, THRESH_BINARY_INV, threshold, Canny, dilate, findContours, RETR_TREE, contourArea, CHAIN_APPROX_SIMPLE, cvtColor, COLOR_GRAY2RGB, COLOR_BGR2GRAY, imread, equalizeHist, add, INTER_CUBIC, GaussianBlur, subtract, filter2D, flip, getRotationMatrix2D, warpAffine, imshow, waitKey, destroyAllWindows
+from cv2 import COLOR_BGR2HSV, inRange, getStructuringElement, MORPH_ELLIPSE, erode, dilate,bitwise_and, drawContours, THRESH_BINARY_INV, threshold, Canny, dilate, findContours, RETR_TREE, contourArea, CHAIN_APPROX_SIMPLE, cvtColor, COLOR_GRAY2RGB, COLOR_BGR2GRAY, imread, equalizeHist, add, INTER_CUBIC, GaussianBlur, subtract, filter2D, flip, getRotationMatrix2D, warpAffine, imshow, waitKey, destroyAllWindows, resize
 from numpy import array, ones, float64, mean, zeros 
 
 def Rotate(image,rotation=90,steps=15):
@@ -38,27 +38,32 @@ def Resize(image,dimension=(28,28)):
     image=resize(image,dimension,interpolation=INTER_CUBIC)
     return image
 
-def HistogramEqualization(image):
-    image=equalizeHist(cvtColor(image, COLOR_BGR2GRAY))
-    #image=cvtColor(image, COLOR_GRAY2RGB)
-    return image
     
 def Segmentation(image):
     image_gray=cvtColor(image, COLOR_BGR2GRAY)
     _,thresh=threshold(image_gray,mean(image_gray),255,THRESH_BINARY_INV)
     edges=dilate(Canny(thresh,0,255),None)
     cnt=sorted(findContours(edges,RETR_TREE,CHAIN_APPROX_SIMPLE)[-2],key=contourArea)[-1]
-    #mask=zeros(image.shape[0:2],dtype='uint8')
     image=drawContours(image,[cnt],-1,(255,255,0),-1)
     return image
+ 
+def SkinDetection(image):
+    lower=array([0,40,80],dtype='uint8')
+    upper=array([20,255,255],dtype='uint8')
+    image=Resize(image,dimension=(256,256))
+    image_hsv=cvtColor(image,COLOR_BGR2HSV)
+    skin_mask=inRange(image_hsv,lower,upper)
+    kernel=getStructuringElement(MORPH_ELLIPSE,(11,11))
+    skin_mask=erode(skin_mask,kernel,iterations=2)
+    skin_mask=dilate(skin_mask,kernel,iterations=2)
+    skin_mask=Smoothing(skin_mask)
+    skin=bitwise_and(image,image,mask=skin_mask)
+    return skin
 
 def show_image(image,window_name):
     imshow(window_name, image)
     waitKey(0) 
     destroyAllWindows()
 
-image=imread("./static/Dataset/Acne/11.jfif")
-show_image(image,"Orignal")
-image=Segmentation(image)
-show_image(image,"Segmentation")
-
+def read_image(path):
+    return imread(path)
