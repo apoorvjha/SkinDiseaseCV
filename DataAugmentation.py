@@ -27,8 +27,9 @@ def Augment(source_path):
         images.append(smooth_image)
     return driver.array(images)
 
-images=Augment("./static/Dataset/Acne/")
-driver.show_image(images[randint(0,images.shape[0])], "")
+if __name__=='__main__':
+    images=Augment("./static/Dataset/Acne/")
+    driver.show_image(images[randint(0,images.shape[0])], "")
 
 
 
