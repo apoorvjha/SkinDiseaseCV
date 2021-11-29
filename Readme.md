@@ -12,6 +12,11 @@ Given images, we have to come up with suitable computer vision model that can le
 
 ## Proposed Solution
 The population we are targeting in the solution is dominantly from India. There is no open sorce skin disease dataset for indian population due to which we have to manually collect and label the images which in our scenario ended up being implcitly balanced but sparse. This sparcity in the training samples is dealt through "Data Augmentation". This is neat jargon for the process of leveraging various image transformation techniques to create variations in terms of position, orientation, resolution and extent of zoom of Region of Interest in the images. Academic researchers have proved beyond the reasonable doubt that it is key technique in eliminating the chances of overfitting.
+Apart from this image processing routine is used to extract out the skin from images calliberated for asian and african skin tones. 
+
+This extracted skin image can then be fed into the machine learning model for inferencing so as to reduce the burden of processing unnecessary foreground and background pixels [pixels which are not part of human skin].
+
+The Convolutional Neural Networks will be used as for inferencing due to their ability to capture spatial dependencies with translation and orientation invariant.
 
 ## Hardware requirements
 	1. RAM >= 4GB
