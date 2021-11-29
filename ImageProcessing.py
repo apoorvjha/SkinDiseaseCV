@@ -1,4 +1,4 @@
-from cv2 import COLOR_BGR2HSV, inRange, getStructuringElement, MORPH_ELLIPSE, erode, dilate,bitwise_and, drawContours, THRESH_BINARY_INV, threshold, Canny, dilate, findContours, RETR_TREE, contourArea, CHAIN_APPROX_SIMPLE, cvtColor, COLOR_GRAY2RGB, COLOR_BGR2GRAY, imread, equalizeHist, add, INTER_CUBIC, GaussianBlur, subtract, filter2D, flip, getRotationMatrix2D, warpAffine, imshow, waitKey, destroyAllWindows, resize
+from cv2 import COLOR_BGR2HSV, inRange, getStructuringElement, MORPH_ELLIPSE, erode, bitwise_and, drawContours, THRESH_BINARY_INV, threshold, Canny, dilate, findContours, RETR_TREE, contourArea, CHAIN_APPROX_SIMPLE, cvtColor, COLOR_GRAY2RGB, COLOR_BGR2GRAY, imread, equalizeHist, add, INTER_CUBIC, GaussianBlur, subtract, filter2D, flip, getRotationMatrix2D, warpAffine, imshow, waitKey, destroyAllWindows, resize
 from numpy import array, ones, float64, mean, zeros 
 
 def Rotate(image,rotation=90,steps=15):
@@ -50,7 +50,7 @@ def Segmentation(image):
 def SkinDetection(image):
     lower=array([0,40,80],dtype='uint8')
     upper=array([20,255,255],dtype='uint8')
-    image=Resize(image,dimension=(256,256))
+    #image=Resize(image,dimension=(256,256))
     image_hsv=cvtColor(image,COLOR_BGR2HSV)
     skin_mask=inRange(image_hsv,lower,upper)
     kernel=getStructuringElement(MORPH_ELLIPSE,(11,11))
@@ -66,4 +66,4 @@ def show_image(image,window_name):
     destroyAllWindows()
 
 def read_image(path):
-    return imread(path)
+    return imread(path,1)
