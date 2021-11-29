@@ -1,2 +1,3 @@
 static/Dataset/*
 SFD/*
+__pycache__/*
