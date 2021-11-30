@@ -1,6 +1,6 @@
 rotation_range=90
 steps=15
-dimension=(256,256)
+dimension=(28,28)
 filters=[16,32,64,128]
 kernel_size=[3,3,3,3]
 input_shape=(dimension[0],dimension[1],3)
