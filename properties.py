@@ -1,0 +1,11 @@
+rotation_range=90
+steps=15
+dimension=(256,256)
+filters=[16,32,64,128]
+kernel_size=[3,3,3,3]
+input_shape=(dimension[0],dimension[1],3)
+stride=[(1,1),(1,1),(1,1),(1,1)]
+dilation=[(1,1),(1,1),(1,1),(1,1)]
+pool_size=[(1,1),(1,1),(1,1),(1,1)]
+dense_layer_neurons=[input_shape[0]*filters[-1],128,64,32,16,8]
+dropout_probability=0.2
