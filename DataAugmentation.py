@@ -1,10 +1,11 @@
 import ImageProcessing as driver
 from os import listdir
 from random import randint
+import properties
 
-rotation_range=90
-steps=15
-dimension=(256,256)
+rotation_range=properties.rotation_range
+steps=properties.steps
+dimension=properties.dimension
 
 def Augment(source_path):
     images=[]
