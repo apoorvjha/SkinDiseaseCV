@@ -5,6 +5,7 @@ from tensorflow.keras.losses import CategoricalCrossentropy
 from tensorflow.keras.metrics  import AUC, CategoricalAccuracy, FalsePositives
 from numpy import array, max, argmax
 import properties
+from os import environ
 
 environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 
