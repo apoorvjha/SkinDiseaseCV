@@ -3,7 +3,7 @@ from tensorflow.keras.layers import Conv2D, Dense, Dropout, Flatten, MaxPool2D
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.losses import CategoricalCrossentropy
 from tensorflow.keras.metrics  import AUC, CategoricalAccuracy, FalsePositives
-from numpy import array, max, argmax
+from numpy import array, max, argmax, zeros
 import properties
 from os import environ
 from matplotlib import pyplot as plt
@@ -57,7 +57,9 @@ def OHV2Class(predictions):
 def Class2OHV(Y):
     OHV_vector=[]
     for i in Y:
-        OHV_vector.append(properties.classes[i])
+        temp=zeros((properties.n_output),dtype='uint8')
+        temp[properties.classes[i]]=1
+        OHV_vector.append(temp)
     return array(OHV_vector)
 def accuracy(predicted,actual,mode=0):
     assert predicted.shape==actual.shape and mode in [0,1] , "Supplied parameters are not valid!"
