@@ -1,3 +1,6 @@
 static/Dataset/*
 SFD/*
 __pycache__/*
+Loss.png
+accuracy.png
+*.h5
