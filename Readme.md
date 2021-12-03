@@ -37,3 +37,18 @@ The source of images used in the training set is Google. A directed search has b
 
 Note : The design of the solution is extensively modular so any single module can be replaced with some variant without affecting other modules. Same applies with the data, As the requiement changes the dataset can be extended or completely changed to adapt to the ever changing requirements.
 
+## Implementation
+The code is segmented into five main components viz., Image Processing, Data Augmentation, Model architecture & operations, Model training and Inferencing. We will look at each module in brief bewlow.
+	### Image Processing : The routines for image smoothing (noise reduction), Image sharpening (incraeses interpixel gradients to make edges crisp and clear), dynamic range adjustment (controls the brightness of the image) , Rotate and flip image on spatial axis.  
+	### Data Augmentation : In start of this project we have marked our main challange and i.e. scarcity of data which has been fulfilled by morphing the small subset of image data (collected and labelled manually) based on image processing routines to have a variety in data points on which the model can train effectively.
+	### Model Architecture : The CNN model architecture and various operations related to changing class integers into onehot vectors and vice versa apart from basic fit and predict methods are present.
+	### Model Training : The Training of the model is done on the images stored locally in dataset folder which is passed through augmentation routine. The model is then saved as h5 file with the name specified in the properties file.
+	### Inference engine : The images on which inferencing needs to be done is picked from processing directory which then is fed through image processing pipeline to extract the skin image on which the inferencing is done via the trained model.
+
+## Setup 
+run below command on the terminal to install the depencies. [Assuming python 3.x x>6 is already installed.]
+$ python -m pip install -r requirements.txt
+
+## Execution
+Keep the images on which the inferencing needs to be done in ./static/processing_dir/ and then run the python script "inference.py" using -> $ python inference.py
+
