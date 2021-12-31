@@ -2,49 +2,77 @@ from os import environ
 environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 import tensorflow as tf
 tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
-from tensorflow.keras.models import Sequential, load_model
+from tensorflow.keras.models import Sequential, load_model,Model
 from tensorflow.keras.layers import Conv2D, Dense, Dropout, Flatten, MaxPool2D
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.losses import CategoricalCrossentropy
 from tensorflow.keras.metrics  import AUC, CategoricalAccuracy, FalsePositives
+from tensorflow.keras.applications.vgg19 import VGG19
+from tensorflow.keras.optimizers.schedules import ExponentialDecay
 from numpy import array, max, argmax, zeros
 import properties
 from matplotlib import pyplot as plt
 
 
 
-def instantiateModel():
-    kernel_n=properties.kernel_size
+def instantiateModel(mode=1):
     input_shape=properties.input_shape
-    stride=properties.stride      # skips, kernel makes at every convolution
-    dilation=properties.dilation  # kernel coverage
-    pooling_size=properties.pool_size
-    dropout_p=properties.dropout_probability
     n_output=properties.n_output
+    dropout_p=properties.dropout_probability
     learning_rate=properties.learning_rate
-    model=Sequential()
-    model.add(Conv2D(filters=16,kernel_size=kernel_n,activation='relu', padding='same',input_shape=input_shape,strides=stride, dilation_rate=dilation))
-    model.add(MaxPool2D(pool_size=pooling_size))
-    model.add(Conv2D(filters=32,kernel_size=kernel_n,activation='relu',padding='same',strides=stride, dilation_rate=dilation))
-    model.add(MaxPool2D(pool_size=pooling_size))
-    model.add(Conv2D(filters=64,kernel_size=kernel_n,activation='relu',padding='same',strides=stride, dilation_rate=dilation))
-    model.add(MaxPool2D(pool_size=pooling_size))
-    model.add(Conv2D(filters=128,kernel_size=kernel_n,activation='relu',padding='same',strides=stride, dilation_rate=dilation))
-    model.add(MaxPool2D(pool_size=pooling_size))
-    model.add(Flatten())
-    model.add(Dense(units=input_shape[0] * 128,activation='relu'))
-    model.add(Dropout(dropout_p))
-    model.add(Dense(units=128,activation='relu'))
-    model.add(Dropout(dropout_p))
-    model.add(Dense(units=64,activation='relu'))
-    model.add(Dropout(dropout_p))
-    model.add(Dense(units=32,activation='relu'))
-    model.add(Dropout(dropout_p))
-    model.add(Dense(units=16,activation='relu'))
-    model.add(Dropout(dropout_p))
-    model.add(Dense(units=n_output,activation="softmax"))
-    model.compile(optimizer=Adam(learning_rate=learning_rate),loss=CategoricalCrossentropy(),metrics=[AUC(),CategoricalAccuracy(),FalsePositives()])
-    return model
+    lr_schedule = ExponentialDecay(
+    initial_learning_rate=learning_rate,
+    decay_steps=1000,
+    decay_rate=0.8)
+    if mode == 0:
+        kernel_n=properties.kernel_size
+        stride=properties.stride      # skips, kernel makes at every convolution
+        dilation=properties.dilation  # kernel coverage
+        pooling_size=properties.pool_size
+        model=Sequential()
+        model.add(Conv2D(filters=16,kernel_size=kernel_n,activation='relu', padding='same',input_shape=input_shape,strides=stride, dilation_rate=dilation))
+        model.add(MaxPool2D(pool_size=pooling_size))
+        model.add(Conv2D(filters=32,kernel_size=kernel_n,activation='relu',padding='same',strides=stride, dilation_rate=dilation))
+        model.add(MaxPool2D(pool_size=pooling_size))
+        model.add(Conv2D(filters=64,kernel_size=kernel_n,activation='relu',padding='same',strides=stride, dilation_rate=dilation))
+        model.add(MaxPool2D(pool_size=pooling_size))
+        model.add(Conv2D(filters=128,kernel_size=kernel_n,activation='relu',padding='same',strides=stride, dilation_rate=dilation))
+        model.add(MaxPool2D(pool_size=pooling_size))
+        model.add(Flatten())
+        model.add(Dense(units=input_shape[0] * 128,activation='relu'))
+        model.add(Dropout(dropout_p))
+        model.add(Dense(units=128,activation='relu'))
+        model.add(Dropout(dropout_p))
+        model.add(Dense(units=64,activation='relu'))
+        model.add(Dropout(dropout_p))
+        model.add(Dense(units=32,activation='relu'))
+        model.add(Dropout(dropout_p))
+        model.add(Dense(units=16,activation='relu'))
+        model.add(Dropout(dropout_p))
+        model.add(Dense(units=n_output,activation="softmax"))
+        model.compile(optimizer=Adam(learning_rate=lr_schedule),loss=CategoricalCrossentropy(),metrics=[AUC(),CategoricalAccuracy(),FalsePositives()])
+        return model
+    elif mode == 1:
+        vgg_top = VGG19(weights='imagenet',input_shape=input_shape,classes=n_output,include_top=False)
+        for layer in vgg_top.layers:
+            layer.trainable=False
+        vgg_fc = Flatten() (vgg_top.output)
+        vgg_fc = Dense(units=512,activation='relu')(vgg_fc)
+        vgg_fc = Dropout(dropout_p)(vgg_fc)
+        vgg_fc = Dense(units=256,activation='relu')(vgg_fc)
+        vgg_fc = Dropout(dropout_p)(vgg_fc)
+        vgg_fc = Dense(units=128,activation='relu')(vgg_fc)
+        vgg_fc = Dropout(dropout_p)(vgg_fc)
+        vgg_fc = Dense(units=64,activation='relu')(vgg_fc)
+        vgg_fc = Dropout(dropout_p)(vgg_fc)
+        vgg_fc = Dense(units=32,activation='relu')(vgg_fc)
+        vgg_fc = Dropout(dropout_p)(vgg_fc)
+        vgg_out = Dense(units=n_output,activation='softmax')(vgg_fc)  
+        model = Model(inputs=vgg_top.input,outputs=vgg_out)
+        model.compile(optimizer=Adam(learning_rate=lr_schedule),loss=CategoricalCrossentropy(),metrics=[AUC(),CategoricalAccuracy(),FalsePositives()])
+        return model
+    else:
+        pass
 def fit(X,Y,model):
     history=model.fit(X,Y,batch_size=properties.batch_size,epochs=properties.epochs,validation_split=properties.validation_split,verbose=properties.verbose)
     return model,history
