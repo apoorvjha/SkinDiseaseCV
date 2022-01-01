@@ -17,15 +17,16 @@ from matplotlib import pyplot as plt
 
 
 
-def instantiateModel(mode=1):
+def instantiateModel(mode=2):
     input_shape=properties.input_shape
     n_output=properties.n_output
     dropout_p=properties.dropout_probability
     learning_rate=properties.learning_rate
-    lr_schedule = ExponentialDecay(
-    initial_learning_rate=learning_rate,
-    decay_steps=1000,
-    decay_rate=0.8)
+    #lr_schedule = ExponentialDecay(
+    #initial_learning_rate=learning_rate,
+    #decay_steps=properties.decay_steps,
+    #decay_rate=properties.decay_rate)
+    lr_schedule = learning_rate
     if mode == 0:
         kernel_n=properties.kernel_size
         stride=properties.stride      # skips, kernel makes at every convolution
@@ -78,6 +79,8 @@ def instantiateModel(mode=1):
         for layer in resnet_top.layers:
             layer.trainable=False
         resnet_fc = Flatten() (resnet_top.output)
+        resnet_fc = Dense(units=2048,activation='relu')(resnet_fc)
+        resnet_fc = Dropout(dropout_p)(resnet_fc)
         resnet_fc = Dense(units=512,activation='relu')(resnet_fc)
         resnet_fc = Dropout(dropout_p)(resnet_fc)
         resnet_fc = Dense(units=256,activation='relu')(resnet_fc)
@@ -90,13 +93,13 @@ def instantiateModel(mode=1):
         resnet_fc = Dropout(dropout_p)(resnet_fc)
         resnet_out = Dense(units=n_output,activation='softmax')(resnet_fc)  
         model = Model(inputs=resnet_top.input,outputs=resnet_out)
-        print(model.summary())
+        #print(model.summary())
         model.compile(optimizer=Adam(learning_rate=lr_schedule),loss=CategoricalCrossentropy(),metrics=[AUC(),CategoricalAccuracy(),FalsePositives()])
         return model
 def fit(X,Y,model):
     # To launch the tensorboard ->  tensorboard --logdir=./TB_logs
-    tensorboard_cb=TensorBoard(log_dir="./TB_logs")
-    history=model.fit(X,Y,batch_size=properties.batch_size,epochs=properties.epochs,validation_split=properties.validation_split,verbose=properties.verbose,callbacks=[tensorboard_cb])
+    #tensorboard_cb=TensorBoard(log_dir="./TB_logs")
+    history=model.fit(X,Y,batch_size=properties.batch_size,epochs=properties.epochs,validation_split=properties.validation_split,verbose=properties.verbose)#,callbacks=[tensorboard_cb])
     return model,history
 def save(model):
     model.save(properties.model_name)
