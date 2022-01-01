@@ -8,7 +8,9 @@ from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.losses import CategoricalCrossentropy
 from tensorflow.keras.metrics  import AUC, CategoricalAccuracy, FalsePositives
 from tensorflow.keras.applications.vgg19 import VGG19
+from tensorflow.keras.applications.resnet50 import ResNet50
 from tensorflow.keras.optimizers.schedules import ExponentialDecay
+from tensorflow.keras.callbacks import TensorBoard
 from numpy import array, max, argmax, zeros
 import properties
 from matplotlib import pyplot as plt
@@ -72,9 +74,29 @@ def instantiateModel(mode=1):
         model.compile(optimizer=Adam(learning_rate=lr_schedule),loss=CategoricalCrossentropy(),metrics=[AUC(),CategoricalAccuracy(),FalsePositives()])
         return model
     else:
-        pass
+        resnet_top = ResNet50(weights='imagenet',input_shape=input_shape,classes=n_output,include_top=False)
+        for layer in resnet_top.layers:
+            layer.trainable=False
+        resnet_fc = Flatten() (resnet_top.output)
+        resnet_fc = Dense(units=512,activation='relu')(resnet_fc)
+        resnet_fc = Dropout(dropout_p)(resnet_fc)
+        resnet_fc = Dense(units=256,activation='relu')(resnet_fc)
+        resnet_fc = Dropout(dropout_p)(resnet_fc)
+        resnet_fc = Dense(units=128,activation='relu')(resnet_fc)
+        resnet_fc = Dropout(dropout_p)(resnet_fc)
+        resnet_fc = Dense(units=64,activation='relu')(resnet_fc)
+        resnet_fc = Dropout(dropout_p)(resnet_fc)
+        resnet_fc = Dense(units=32,activation='relu')(resnet_fc)
+        resnet_fc = Dropout(dropout_p)(resnet_fc)
+        resnet_out = Dense(units=n_output,activation='softmax')(resnet_fc)  
+        model = Model(inputs=resnet_top.input,outputs=resnet_out)
+        print(model.summary())
+        model.compile(optimizer=Adam(learning_rate=lr_schedule),loss=CategoricalCrossentropy(),metrics=[AUC(),CategoricalAccuracy(),FalsePositives()])
+        return model
 def fit(X,Y,model):
-    history=model.fit(X,Y,batch_size=properties.batch_size,epochs=properties.epochs,validation_split=properties.validation_split,verbose=properties.verbose)
+    # To launch the tensorboard ->  tensorboard --logdir=./TB_logs
+    tensorboard_cb=TensorBoard(log_dir="./TB_logs")
+    history=model.fit(X,Y,batch_size=properties.batch_size,epochs=properties.epochs,validation_split=properties.validation_split,verbose=properties.verbose,callbacks=[tensorboard_cb])
     return model,history
 def save(model):
     model.save(properties.model_name)
