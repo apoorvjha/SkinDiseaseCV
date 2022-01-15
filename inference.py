@@ -1,3 +1,6 @@
+import time
+start=time.time()
+
 import Model
 import ImageProcessing as driver
 import properties
@@ -20,6 +23,6 @@ predictions=Model.OHV2Class(Model.predict(X,model))
 for i in range(len(os.listdir(path))):
     print(f"{os.listdir(path)[i]} belongs to {list(properties.classes.keys())[predictions[i]]}")
 
-   
+print(time.time()-start)   
 
 
