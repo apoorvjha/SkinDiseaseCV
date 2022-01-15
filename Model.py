@@ -1,5 +1,6 @@
 from os import environ
 environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
+import time
 import tensorflow as tf
 tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 from tensorflow.keras.models import Sequential, load_model,Model
@@ -17,7 +18,7 @@ from matplotlib import pyplot as plt
 
 
 
-def instantiateModel(mode=2):
+def instantiateModel(mode=1):
     input_shape=properties.input_shape
     n_output=properties.n_output
     dropout_p=properties.dropout_probability
@@ -99,7 +100,9 @@ def instantiateModel(mode=2):
 def fit(X,Y,model):
     # To launch the tensorboard ->  tensorboard --logdir=./TB_logs
     #tensorboard_cb=TensorBoard(log_dir="./TB_logs")
+    start=time.time()
     history=model.fit(X,Y,batch_size=properties.batch_size,epochs=properties.epochs,validation_split=properties.validation_split,verbose=properties.verbose)#,callbacks=[tensorboard_cb])
+    print(time.time()-start)
     return model,history
 def save(model):
     model.save(properties.model_name)
