@@ -116,3 +116,12 @@ function validate_login(){
         return false;
     }	
 }
+
+function remove_msg(){
+	if(document.getElementById("alert alert-success")!=null){
+		document.getElementById("alert alert-success").style.display='none';
+	}
+	if(document.getElementById("alert alert-danger")!=null){
+		document.getElementById("alert alert-danger").style.display='none';
+	}
+}
