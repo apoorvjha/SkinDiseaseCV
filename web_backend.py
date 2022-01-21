@@ -25,7 +25,7 @@ def logout():
         session.pop('profilePic',None)
         session.pop('type',None)
         session.pop('userId',None)        
-        flash("Successfully logged out!",'elert alert-success')        
+        flash("Successfully logged out!",'alert alert-success')        
     return redirect(url_for('index'))
 @app.route('/admin')
 def admin():
