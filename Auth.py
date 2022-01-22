@@ -68,6 +68,50 @@ def register(userId,password,email,profilePath):
         val=(userId,password,email,profilePath,'user',1)
         db.executeQuery(con, query, val, ReturnMode=False)
         return True
- 
 
+def getUsers():
+    db=DataBase()
+    con=db.dbServerlogin()
+    query="SELECT `userID`,`profilePic`,`username`,`email`,`isActive` FROM `credentials` WHERE `type`='user'"
+    data=db.executeQuery(con, query)
+    return data
 
+def activate(id):
+    db=DataBase()
+    con=db.dbServerlogin()
+    query="UPDATE `credentials` SET `isActive`=1 WHERE `userID`=%s"
+    val=(id,)
+    data=db.executeQuery(con, query,val, ReturnMode=False)
+    return
+
+def deactivate(id):
+    db=DataBase()
+    con=db.dbServerlogin()
+    query="UPDATE `credentials` SET `isActive`=0 WHERE `userID`=%s"
+    val=(id,)
+    data=db.executeQuery(con, query,val, ReturnMode=False)
+    return
+
+def changeUserName(id,newName):
+    db=DataBase()
+    con=db.dbServerlogin()
+    query="UPDATE `credentials` SET `username`=%s WHERE `userID`=%s"
+    val=(newName,id)
+    data=db.executeQuery(con, query,val, ReturnMode=False)
+    return
+
+def changePassword(id,newPass):
+    db=DataBase()
+    con=db.dbServerlogin()
+    query="UPDATE `credentials` SET `password`=%s WHERE `userID`=%s"
+    val=(newPass,id)
+    data=db.executeQuery(con, query,val, ReturnMode=False)
+    return
+
+def changeEmail(id,newEmail):
+    db=DataBase()
+    con=db.dbServerlogin()
+    query="UPDATE `credentials` SET `email`=%s WHERE `userID`=%s"
+    val=(newEmail,id)
+    data=db.executeQuery(con, query,val, ReturnMode=False)
+    return

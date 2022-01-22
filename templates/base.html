@@ -36,9 +36,17 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{{ url_for('static',filename='./doc/report.pdf') }}">Documentation</a>
                   </li>
-                  {% if session['user_type']=='admin' %}
+                  {% if session['type']=='admin' %}
                   <li class="nav-item">
                     <a class="nav-link" href="{{ url_for('admin') }}">Admin</a>
+                  </li>
+                  {% endif %}
+                  {% if session['username'] %}
+                  <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('settings') }}">Settings</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('analytics') }}">Analytics</a>
                   </li>
                   {% endif %}
               </ul>

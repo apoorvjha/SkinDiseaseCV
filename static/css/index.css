@@ -40,3 +40,19 @@ body{
 	border-bottom-color:grey;
 	border-top-color:orange;
 }
+.user-data-div th{
+    background-color: blue;
+    color: white;
+    padding: 10px;
+}
+.user-data-div td{
+    background-color: white;
+    color: black;
+    padding: 10px;
+}
+
+.settings{
+    background-color: white;
+    color : black;
+    padding : 10px;
+}
