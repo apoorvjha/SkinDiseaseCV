@@ -3,3 +3,4 @@ __pycache__/*
 Loss*.png
 accuracy*.png
 *.h5
+static/PROFILE_PIC/*
