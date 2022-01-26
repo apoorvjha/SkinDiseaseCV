@@ -4,3 +4,4 @@ Loss*.png
 accuracy*.png
 *.h5
 static/PROFILE_PIC/*
+static/processing_dir/*
