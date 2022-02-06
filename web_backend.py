@@ -161,7 +161,7 @@ def inference():
             X=[]
             image_cv=driver.read_image('static/processing_dir/'+fileName)
             image_cv=driver.Resize(image_cv,dimension=properties.dimension)
-            image_cv=driver.SkinDetection(image_cv)
+            #image_cv=driver.SkinDetection(image_cv)
             X.append(image_cv)
             X=Model.array(X)
             model=Model.load()
@@ -211,7 +211,7 @@ def getDataset():
     if session['userId']:
         if request.method=='GET':
             response={"datasets" : [],"status" : 200}
-            path='./static/Dataset/'
+            path=properties.dataset_path
             directories=list(properties.classes.keys())
             for i in range(len(directories)):
                 for j in listdir(path+directories[i]+'/'):
