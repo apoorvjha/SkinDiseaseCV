@@ -6,3 +6,4 @@ accuracy*.png
 static/PROFILE_PIC/*
 static/processing_dir/*
 static/Dataset_Dermat/*
+*.ipynb*
