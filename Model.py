@@ -73,7 +73,7 @@ def instantiateModel(mode=1):
         vgg_fc = Dropout(dropout_p)(vgg_fc)
         vgg_out = Dense(units=n_output,activation='softmax')(vgg_fc)  
         model = Model(inputs=vgg_top.input,outputs=vgg_out)
-        model.compile(optimizer=Adam(learning_rate=lr_schedule),loss=CategoricalCrossentropy(),metrics=[Accuracy()])
+        model.compile(optimizer=Adam(learning_rate=lr_schedule),loss=CategoricalCrossentropy(),metrics=[AUC(),CategoricalAccuracy(), Accuracy()])
         return model
     else:
         resnet_top = ResNet50(weights='imagenet',input_shape=input_shape,classes=n_output,include_top=False)
