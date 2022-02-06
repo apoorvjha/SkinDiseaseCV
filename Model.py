@@ -1,13 +1,13 @@
 from os import environ
-#environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
+environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 import time
 import tensorflow as tf
-#tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
+tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 from tensorflow.keras.models import Sequential, load_model,Model
 from tensorflow.keras.layers import Conv2D, Dense, Dropout, Flatten, MaxPool2D
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.losses import CategoricalCrossentropy
-from tensorflow.keras.metrics  import AUC, CategoricalAccuracy, FalsePositives
+from tensorflow.keras.metrics  import AUC, CategoricalAccuracy, FalsePositives, Accuracy
 from tensorflow.keras.applications.vgg19 import VGG19
 from tensorflow.keras.applications.resnet50 import ResNet50
 from tensorflow.keras.optimizers.schedules import ExponentialDecay
@@ -61,10 +61,10 @@ def instantiateModel(mode=1):
         for layer in vgg_top.layers:
             layer.trainable=False
         vgg_fc = Flatten() (vgg_top.output)
-        vgg_fc = Dense(units=512,activation='relu')(vgg_fc)
-        vgg_fc = Dropout(dropout_p)(vgg_fc)
-        vgg_fc = Dense(units=256,activation='relu')(vgg_fc)
-        vgg_fc = Dropout(dropout_p)(vgg_fc)
+        #vgg_fc = Dense(units=512,activation='relu')(vgg_fc)
+        #vgg_fc = Dropout(dropout_p)(vgg_fc)
+        #vgg_fc = Dense(units=256,activation='relu')(vgg_fc)
+        #vgg_fc = Dropout(dropout_p)(vgg_fc)
         vgg_fc = Dense(units=128,activation='relu')(vgg_fc)
         vgg_fc = Dropout(dropout_p)(vgg_fc)
         vgg_fc = Dense(units=64,activation='relu')(vgg_fc)
@@ -73,7 +73,7 @@ def instantiateModel(mode=1):
         vgg_fc = Dropout(dropout_p)(vgg_fc)
         vgg_out = Dense(units=n_output,activation='softmax')(vgg_fc)  
         model = Model(inputs=vgg_top.input,outputs=vgg_out)
-        model.compile(optimizer=Adam(learning_rate=lr_schedule),loss=CategoricalCrossentropy(),metrics=[AUC(),CategoricalAccuracy(),FalsePositives()])
+        model.compile(optimizer=Adam(learning_rate=lr_schedule),loss=CategoricalCrossentropy(),metrics=[Accuracy()])
         return model
     else:
         resnet_top = ResNet50(weights='imagenet',input_shape=input_shape,classes=n_output,include_top=False)
@@ -101,7 +101,7 @@ def fit(X,Y,model):
     # To launch the tensorboard ->  tensorboard --logdir=./TB_logs
     #tensorboard_cb=TensorBoard(log_dir="./TB_logs")
     start=time.time()
-    history=model.fit(X,Y,batch_size=properties.batch_size,epochs=properties.epochs,validation_split=properties.validation_split,verbose=properties.verbose)#,callbacks=[tensorboard_cb])
+    history=model.fit(X,Y,batch_size=properties.batch_size,epochs=properties.epochs,validation_split=properties.validation_split)#,verbose=properties.verbose)#,callbacks=[tensorboard_cb])
     print(time.time()-start)
     return model,history
 def save(model):
@@ -120,21 +120,6 @@ def Class2OHV(Y):
         temp[properties.classes[i]]=1
         OHV_vector.append(temp)
     return array(OHV_vector)
-def accuracy(predicted,actual,mode=0):
-    assert predicted.shape==actual.shape and mode in [0,1] , "Supplied parameters are not valid!"
-    # mode=0 ; supplied parameters are OHVs
-    # mode=1 ; supplied parameters are class integer mappings.
-    count=0
-    if mode==0:
-        for i in range(predicted.shape[0]):
-            if argmax(predicted[i])==argmax(actual[i]):
-                count+=1
-        return round(count * 100 / predicted.shape[0],properties.precision)
-    else:
-        for i in range(predicted.shape[0]):
-            if predicted[i]==actual[i]:
-                count+=1
-        return round(count * 100 / predicted.shape[0],properties.precision)
 def plot_train_history(history):
     X=history.history['loss']
     Y=history.history['val_loss']
@@ -149,8 +134,8 @@ def plot_train_history(history):
     plt.legend(legend,loc='upper left')
     plt.savefig("Loss.png")
     plt.close()
-    X=history.history['categorical_accuracy']
-    Y=history.history['val_categorical_accuracy']
+    X=history.history['accuracy']
+    Y=history.history['val_accuracy']
     title="Accuracy"
     label=["Metrics","Epochs"]
     plt.plot(X)

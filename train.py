@@ -23,5 +23,4 @@ else:
 model,history=Model.fit(X_train,Y_train,model)
 Model.save(model)    
 Model.plot_train_history(history)
-predictions=Model.predict(X_test, model)
-print("Accuracy = "+str(Model.accuracy(predictions, Y_test)))
+model.evaluate(X_test,Y_test,batch_size=properties.batch_size)
