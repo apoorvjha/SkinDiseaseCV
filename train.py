@@ -4,7 +4,7 @@ import properties
 from sklearn.model_selection import train_test_split
 import os
 
-path='./static/Dataset/'
+path=properties.dataset_path
 X=[]
 Y=[]
 directories=list(properties.classes.keys())

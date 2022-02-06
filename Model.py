@@ -1,8 +1,8 @@
 from os import environ
-environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
+#environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 import time
 import tensorflow as tf
-tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
+#tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 from tensorflow.keras.models import Sequential, load_model,Model
 from tensorflow.keras.layers import Conv2D, Dense, Dropout, Flatten, MaxPool2D
 from tensorflow.keras.optimizers import Adam
