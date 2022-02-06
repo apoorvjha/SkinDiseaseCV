@@ -73,7 +73,7 @@ def instantiateModel(mode=1):
         vgg_fc = Dropout(dropout_p)(vgg_fc)
         vgg_out = Dense(units=n_output,activation='softmax')(vgg_fc)  
         model = Model(inputs=vgg_top.input,outputs=vgg_out)
-        model.compile(optimizer=Adam(learning_rate=lr_schedule),loss=CategoricalCrossentropy(),metrics=[AUC(),CategoricalAccuracy(), Accuracy()])
+        model.compile(optimizer=Adam(learning_rate=lr_schedule),loss=CategoricalCrossentropy(),metrics=[AUC()])
         return model
     else:
         resnet_top = ResNet50(weights='imagenet',input_shape=input_shape,classes=n_output,include_top=False)
@@ -102,7 +102,7 @@ def fit(X,Y,model):
     #tensorboard_cb=TensorBoard(log_dir="./TB_logs")
     start=time.time()
     history=model.fit(X,Y,batch_size=properties.batch_size,epochs=properties.epochs,validation_split=properties.validation_split)#,verbose=properties.verbose)#,callbacks=[tensorboard_cb])
-    print(time.time()-start)
+    print(f"Time for training = {round(time.time()-start,properties.precision)} seconds.")
     return model,history
 def save(model):
     model.save(properties.model_name)
@@ -134,8 +134,8 @@ def plot_train_history(history):
     plt.legend(legend,loc='upper left')
     plt.savefig("Loss.png")
     plt.close()
-    X=history.history['accuracy']
-    Y=history.history['val_accuracy']
+    X=history.history['auc']
+    Y=history.history['val_auc']
     title="Accuracy"
     label=["Metrics","Epochs"]
     plt.plot(X)
