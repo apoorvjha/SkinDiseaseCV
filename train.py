@@ -23,7 +23,7 @@ else:
 model,history=Model.fit(X_train,Y_train,model)
 Model.save(model)    
 Model.plot_train_history(history)
-prediction=Model.predict(X_test)
+prediction=Model.predict(X_test,model)
 accuracy=Model.AUC()
 accuracy.reset_state()
 accuracy.update_state(prediction,Y_test)
